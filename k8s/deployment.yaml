@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: poc-app
+  name: poc-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: poc-app
+  template:
+    metadata:
+      labels:
+        app: poc-app
+    spec:
+      containers:
+        - image: image-registry.openshift-image-registry.svc:5000/pipeline-poc/poc-app:latest
+          imagePullPolicy: Always
+          name: poc-app
+          ports:
+            - containerPort: 3000
+              protocol: TCP

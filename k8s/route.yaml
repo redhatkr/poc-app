@@ -1,0 +1,13 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: poc-app
+  name: poc-app
+spec:
+  port:
+    targetPort: 3000
+  to:
+    kind: Service
+    name: poc-app
+    weight: 100
