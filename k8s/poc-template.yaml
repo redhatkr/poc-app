@@ -1,0 +1,87 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: poc-app-template
+  annotations:
+    description: Application template for Hana bank poc
+    iconClass: icon-jboss
+objects:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app: poc-app-${NAME}
+    name: poc-app-${NAME}
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: poc-app-${NAME}
+    template:
+      metadata:
+        labels:
+          app: poc-app-${NAME}
+      spec:
+        containers:
+          - image: ${IMAGE}:${TAG}
+            imagePullPolicy: Always
+            name: poc-app-${NAME}
+            ports:
+              - containerPort: 3000
+                protocol: TCP
+        imagePullSecrets:
+          - name: regcred
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: poc-app-${NAME}
+    name: poc-app-${NAME}
+  spec:
+    ports:
+      - protocol: TCP
+        port: 80
+        targetPort: 3000
+    type: ClusterIP
+    selector:
+      app: poc-app-${NAME}
+
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    labels:
+      app: poc-app-bluegreen
+    name: poc-app-bluegreen
+  spec:
+    to:
+      kind: Service
+      name: poc-app-${COLOR}
+      weight: 100
+    port:
+      targetPort: 3000
+
+parameters:
+- description: image
+  displayName: image
+  name: IMAGE
+  required: true
+  value: ocp-registry-quay-quay.apps.ocp-vm.poc.cloud/admin/poc-app
+
+- description: tag
+  displayName: tag
+  name: TAG
+  required: true
+  value: latest
+
+- description: name
+  displayName: name
+  name: NAME
+  required: true
+  value: blue
+
+- description: color
+  displayName: color
+  name: COLOR
+  required: true
+  value: blue
