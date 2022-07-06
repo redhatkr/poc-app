@@ -1,0 +1,32 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: trigger-template-new-pipeline
+spec:
+  params:
+    - name: git-revision
+    - name: git-commit-message
+    - name: git-repo-url
+    - name: git-repo-name
+    - name: pusher-name
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        annotations:
+          pipeline.openshift.io/started-by: ocpadmin
+        generateName: new-pipeline-
+        labels:
+          tekton.dev/pipeline: new-pipeline
+        namespace: cicd
+      spec:
+        params: []
+        pipelineRef:
+          name: new-pipeline
+        resources: []
+        status: null
+        workspaces:
+          - name: poc-workspace
+            persistentVolumeClaim:
+              claimName: workspace-volume
+

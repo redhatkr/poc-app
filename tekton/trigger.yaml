@@ -1,0 +1,10 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: Trigger
+metadata:
+  name: poc-trigger
+spec:
+  serviceAccountName: pipeline
+  bindings:
+    - ref: poc-app
+  template:
+     name: poc-app
